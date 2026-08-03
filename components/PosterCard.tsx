@@ -22,7 +22,7 @@ export function PosterCard({ item }: { item: MediaItem }) {
   return (
     <Link href={`${pathname}/${item.id}`}>
       <motion.div
-        className="relative aspect-[2/3] w-full rounded-md overflow-hidden cursor-pointer"
+        className="group relative aspect-[2/3] w-full rounded-md overflow-hidden cursor-pointer"
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
         style={{
@@ -40,6 +40,16 @@ export function PosterCard({ item }: { item: MediaItem }) {
         ) : (
           <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/30 p-4 text-center font-sans">
             No Image
+          </div>
+        )}
+
+        {/* Transparent Cross Overlay for Rated Movies */}
+        {item.rating !== undefined && item.rating !== null && (
+          <div className="absolute inset-0 pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+            <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1" />
+              <line x1="100" y1="0" x2="0" y2="100" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1" />
+            </svg>
           </div>
         )}
 
