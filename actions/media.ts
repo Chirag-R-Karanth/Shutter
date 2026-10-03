@@ -59,7 +59,7 @@ export async function addMedia(item: SearchResult) {
           poster_url: item.poster_url,
           backdrop_url: item.backdrop_url,
           external_id: item.external_id,
-          is_logged: true,
+          is_logged: false,
         }
       ])
       .select()

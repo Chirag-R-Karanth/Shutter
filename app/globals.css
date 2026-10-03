@@ -14,17 +14,19 @@
 }
 
 :root {
-  --background: #0B0B0C;
-  --foreground: #F5F5F5;
-  --muted-foreground: #9A9A9A;
+  /* Catppuccin Mocha */
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --muted-foreground: #a6adc8;
   --card: transparent;
   --border: transparent;
 }
 
 .dark {
-  --background: #0B0B0C;
-  --foreground: #F5F5F5;
-  --muted-foreground: #9A9A9A;
+  /* Catppuccin Mocha */
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --muted-foreground: #a6adc8;
 }
 
 @layer base {

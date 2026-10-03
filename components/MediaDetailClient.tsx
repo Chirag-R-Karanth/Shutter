@@ -75,7 +75,7 @@ export function MediaDetailClient({ item }: { item: MediaItem }) {
         className="absolute inset-0 z-0 overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 0.15 }}
-        transition={{ duration: 1, ease: "easeOut" }}
+        transition={{ duration: 0.3, ease: "easeOut" }}
       >
         {item.poster_url && (
           <Image
@@ -121,9 +121,9 @@ export function MediaDetailClient({ item }: { item: MediaItem }) {
       <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col md:flex-row items-center md:items-start gap-12 md:gap-24">
         {/* Poster */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 8 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.25, ease: "easeOut" }}
           className="w-full max-w-[320px] shrink-0"
         >
           <div className="relative aspect-[2/3] w-full rounded-md overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,0,0,0.5)] bg-white/5">
@@ -147,9 +147,9 @@ export function MediaDetailClient({ item }: { item: MediaItem }) {
         <div className="flex-1 flex flex-col pt-8 md:pt-12 w-full">
           {/* Title & Year */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
           >
             <div className="flex items-center gap-3">
               <h1 className="text-4xl md:text-6xl font-heading text-white tracking-tight mb-2">
@@ -176,9 +176,9 @@ export function MediaDetailClient({ item }: { item: MediaItem }) {
 
           {/* Letterboxd-style 5-Star Rating (with 1/2 stars) */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.2, delay: 0.05, ease: "easeOut" }}
             className="flex items-center gap-3 mb-10"
             onMouseLeave={() => setHoverRating(null)}
           >
@@ -239,9 +239,9 @@ export function MediaDetailClient({ item }: { item: MediaItem }) {
 
           {/* Review Section */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+            transition={{ duration: 0.2, delay: 0.08, ease: "easeOut" }}
             className="prose prose-invert max-w-none w-full"
           >
             {isEditingReview ? (

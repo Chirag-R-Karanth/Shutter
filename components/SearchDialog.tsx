@@ -44,7 +44,7 @@ export function SearchDialog({ category, onClose }: { category: MediaType; onClo
       } finally {
         setIsSearching(false);
       }
-    }, 300);
+    }, 180);
 
     return () => clearTimeout(timer);
   }, [query, category]);

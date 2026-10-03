@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 
 import { MediaItem } from "@/types";
 
-export function PosterCard({ item }: { item: MediaItem }) {
+export function PosterCard({ item, priority = false }: { item: MediaItem; priority?: boolean }) {
   const pathname = usePathname();
   
   // Rating sentiment dot color
@@ -24,7 +24,7 @@ export function PosterCard({ item }: { item: MediaItem }) {
       <motion.div
         className="group relative aspect-[2/3] w-full rounded-md overflow-hidden cursor-pointer"
         whileHover={{ scale: 1.02 }}
-        transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+        transition={{ duration: 0.15, ease: "easeOut" }}
         style={{
           boxShadow: "0 10px 40px -10px rgba(0,0,0,0.3)",
         }}
@@ -36,6 +36,8 @@ export function PosterCard({ item }: { item: MediaItem }) {
             fill
             className="object-cover"
             sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 16vw"
+            priority={priority}
+            loading={priority ? "eager" : "lazy"}
           />
         ) : (
           <div className="w-full h-full bg-white/5 flex items-center justify-center text-white/30 p-4 text-center font-sans">
@@ -45,7 +47,7 @@ export function PosterCard({ item }: { item: MediaItem }) {
 
         {/* Transparent Cross Overlay for Rated Movies */}
         {item.rating !== undefined && item.rating !== null && (
-          <div className="absolute inset-0 pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-300">
+          <div className="absolute inset-0 pointer-events-none opacity-100 group-hover:opacity-0 transition-opacity duration-150">
             <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
               <line x1="0" y1="0" x2="100" y2="100" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1" />
               <line x1="100" y1="0" x2="0" y2="100" stroke="rgba(255, 255, 255, 0.2)" strokeWidth="1" />
@@ -58,7 +60,7 @@ export function PosterCard({ item }: { item: MediaItem }) {
           className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0"
           initial={{ opacity: 0 }}
           whileHover={{ opacity: 1 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.15 }}
         >
           <div className="absolute bottom-0 left-0 right-0 p-4 flex items-end justify-between">
             <h3 className="font-heading text-sm text-white/90 truncate mr-2 text-shadow-sm">
