@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1e1e2e">
+  <meta name="description" content="A quiet, personal archive of films, shows, anime, books, and games.">
+  <title>Shutter — Media Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/components.css">
+  <link rel="stylesheet" href="./css/animations.css">
+  <script type="module" src="./js/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#/">SHUTTER<span>·</span></a>
+    <nav class="primary-nav" aria-label="Media libraries" id="primary-nav"></nav>
+    <button class="icon-button mobile-menu" id="mobile-menu" aria-label="Toggle navigation" aria-expanded="false">☰</button>
+  </header>
+  <main id="app" class="app-shell">
+    <section class="hero" id="hero">
+      <p class="eyebrow">A PERSONAL MEDIA ARCHIVE</p>
+      <h1>Keep what<br><em>moves you.</em></h1>
+      <p class="hero-copy">Films, shows, stories, and worlds worth remembering.</p>
+      <div class="hero-links" id="hero-links"></div>
+    </section>
+    <section class="archive-view hidden" id="archive-view" aria-live="polite">
+      <div class="section-heading">
+        <div><p class="eyebrow" id="category-eyebrow">YOUR COLLECTION</p><h1 id="category-title">Movies</h1></div>
+        <button class="primary-button" id="add-media">＋ Add to archive</button>
+      </div>
+      <div class="archive-controls">
+        <label class="search-input"><span aria-hidden="true">⌕</span><input id="archive-search" type="search" placeholder="Search your archive…" autocomplete="off"></label>
+        <div class="filter-group" role="group" aria-label="Filter archive">
+          <button class="filter-button active" data-filter="all">All</button>
+          <button class="filter-button" data-filter="rated">Rated</button>
+          <button class="filter-button" data-filter="unrated">Unrated</button>
+        </div>
+      </div>
+      <p class="result-count" id="result-count"></p>
+      <div class="poster-grid" id="poster-grid"></div>
+      <div class="empty-state hidden" id="empty-state"></div>
+    </section>
+  </main>
+  <dialog class="search-dialog" id="search-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <div><p class="eyebrow">DISCOVER SOMETHING</p><h2 id="dialog-title">Add to your archive</h2></div>
+      <button class="icon-button" id="close-search" aria-label="Close search">×</button>
+    </div>
+    <label class="search-input provider-search"><span aria-hidden="true">⌕</span><input id="provider-query" type="search" placeholder="Search titles…" autocomplete="off"></label>
+    <p class="dialog-status" id="search-status">Start typing to search.</p>
+    <div class="search-results" id="search-results"></div>
+  </dialog>
+  <dialog class="detail-dialog" id="detail-dialog" aria-label="Media details">
+    <button class="detail-close icon-button" id="close-detail" aria-label="Close details">×</button>
+    <div id="detail-content"></div>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <footer class="site-footer"><span>SHUTTER / PERSONAL ARCHIVE</span><span>Made to remember.</span></footer>
+</body>
+</html>
