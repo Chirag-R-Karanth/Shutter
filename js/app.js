@@ -8,6 +8,7 @@ const CATEGORIES = [
 ];
 const $ = selector => document.querySelector(selector);
 const state = { category: null, items: [], filter: "all", archiveQuery: "", selected: null, searchTimer: null, searchController: null, toastTimer: null };
+let activeRouteRequest = 0;
 const nav = $("#primary-nav");
 const hero = $("#hero");
 const archiveView = $("#archive-view");
@@ -49,6 +50,7 @@ function updateActiveNav() {
   });
 }
 async function renderRoute() {
+  const requestId = ++activeRouteRequest;
   const routeState = route();
   state.category = routeState.category;
   updateActiveNav();
@@ -66,7 +68,9 @@ async function renderRoute() {
   empty.classList.add("hidden");
   resultCount.textContent = "Loading your archive…";
   try {
-    state.items = await listMedia(state.category);
+    const items = await listMedia(state.category);
+    if (requestId !== activeRouteRequest) return;
+    state.items = items;
     renderGrid();
     if (routeState.id) {
       const item = state.items.find(entry => entry.id === routeState.id);
@@ -74,6 +78,7 @@ async function renderRoute() {
       else { detailDialog.close(); toast("That item wasn't found in this category."); }
     } else if (detailDialog.open) detailDialog.close();
   } catch (error) {
+    if (requestId !== activeRouteRequest) return;
     console.error(error);
     resultCount.textContent = "";
     showEmpty("Could not load the archive. Check your Supabase configuration and access policies.");
@@ -198,17 +203,20 @@ function openDetails(item, updateHash = true) {
   const art = item.poster_url
     ? `<img src="${escapeHTML(item.poster_url)}" alt="${escapeHTML(item.title)}" decoding="async">`
     : `<span class="poster-placeholder">${escapeHTML(item.title)}</span>`;
-  detailContent.innerHTML = `<div class="detail-layout"><div class="detail-art">${art}</div><section class="detail-copy"><p class="eyebrow">${escapeHTML(CATEGORIES.find(cat => cat.id === item.category)?.label || item.category)}</p><h2>${escapeHTML(item.title)}</h2><p class="detail-year">${escapeHTML(item.release_year || "Release year unknown")}</p><div class="stars" role="group" aria-label="Rate this title">${[1,2,3,4,5].map(value => `<button type="button" class="star-button ${Number(item.rating || 0) >= value ? "active" : ""}" data-rating="${value}" aria-label="Rate ${value} out of 5" aria-pressed="${Number(item.rating || 0) >= value}">${Number(item.rating || 0) >= value ? "★" : "☆"}</button>`).join("")}<span class="rating-value">${item.rating ? `${Number(item.rating).toFixed(1)} / 5` : "Unrated"}</span></div><label class="review-label" for="review-text">YOUR NOTES</label><textarea class="review-text" id="review-text" placeholder="What did you think?">${escapeHTML(item.review || "")}</textarea><div class="review-actions"><button class="primary-button" id="save-review">Save notes</button><button class="danger-button" id="delete-media">Remove from archive</button></div></section></div>`;
-  detailContent.querySelectorAll("[data-rating]").forEach(button => button.addEventListener("click", async () => {
+  detailContent.innerHTML = `<div class="detail-layout"><div class="detail-art">${art}</div><section class="detail-copy"><p class="eyebrow">${escapeHTML(CATEGORIES.find(cat => cat.id === item.category)?.label || item.category)}</p><h2>${escapeHTML(item.title)}</h2><p class="detail-year">${escapeHTML(item.release_year || "Release year unknown")}</p><div class="stars" role="group" aria-label="Rate this title">${[1,2,3,4,5].map(value => { const fill = Math.max(0, Math.min(1, Number(item.rating || 0) - (value - 1))) * 100; return `<button type="button" class="star-button" data-star-index="${value - 1}" aria-label="Rate up to ${value} stars"><span class="star-empty">☆</span><span class="star-fill" style="width:${fill}%">★</span></button>`; }).join("")}<span class="rating-value">${item.rating ? `${Number(item.rating).toFixed(1)} / 5` : "Unrated"}</span></div><label class="review-label" for="review-text">YOUR NOTES</label><textarea class="review-text" id="review-text" placeholder="What did you think?">${escapeHTML(item.review || "")}</textarea><div class="review-actions"><button class="primary-button" id="save-review">Save notes</button><button class="danger-button" id="delete-media">Remove from archive</button></div></section></div>`;
+  detailContent.querySelectorAll("[data-star-index]").forEach(button => button.addEventListener("click", async event => {
     const current = Number(state.selected.rating || 0);
-    const clicked = Number(button.dataset.rating);
-    const rating = current === clicked ? null : clicked;
-    await persistReview({ rating, review: $("#review-text").value, message: rating == null ? "Rating removed." : "Rating saved." });
-    if (state.selected) refreshDetail();
+    const index = Number(button.dataset.starIndex);
+    const rect = button.getBoundingClientRect();
+    // Keyboard activation selects a full star; pointer activation supports half-stars.
+    const target = event.detail === 0 ? index + 1 : index + (event.clientX < rect.left + rect.width / 2 ? 0.5 : 1);
+    const rating = current === target ? null : target;
+    const saved = await persistReview({ rating, review: $("#review-text").value, message: rating == null ? "Rating removed." : "Rating saved." });
+    if (saved && state.selected) refreshDetail();
   }));
   $("#save-review").addEventListener("click", async () => {
-    await persistReview({ rating: state.selected.rating == null ? null : Number(state.selected.rating), review: $("#review-text").value, message: "Notes saved." });
-    if (state.selected) refreshDetail();
+    const saved = await persistReview({ rating: state.selected.rating == null ? null : Number(state.selected.rating), review: $("#review-text").value, message: "Notes saved." });
+    if (saved && state.selected) refreshDetail();
   });
   $("#delete-media").addEventListener("click", deleteSelected);
   if (!detailDialog.open) detailDialog.showModal();
@@ -229,9 +237,11 @@ async function persistReview({ rating, review, message }) {
     state.selected = state.items.find(item => item.id === id);
     renderGrid();
     toast(message);
+    return true;
   } catch (error) {
     console.error(error);
     toast(error.message || "Could not save changes.");
+    return false;
   } finally {
     buttons.forEach(button => button.disabled = false);
   }
