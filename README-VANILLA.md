@@ -6,13 +6,13 @@ This branch introduces a plain HTML/CSS/JavaScript frontend while leaving the ex
 
 - A static web server (ES modules and browser imports do not work reliably from `file://`).
 - A Supabase project with the existing `media` table.
-- A local `js/config.js` copied from `js/config.example.js`.
+- The browser-safe settings in `js/config.js` (the committed file contains placeholders).
 - An IGDB proxy endpoint to enable games search.
 - TMDB search needs an approved browser-exposed key or, preferably, a small server-side proxy. No provider secrets belong in browser code.
 
 ## Run locally
 
-1. Copy `js/config.example.js` to `js/config.js` and insert the Supabase project URL and publishable/anon key.
+1. Edit `js/config.js` and insert your Supabase project URL and publishable/anon key. Use only a browser-safe key. TMDB is disabled until you configure an approved browser key or proxy; IGDB needs a proxy URL.
 2. Run a static server from the repository root, for example:
 
    ```sh
@@ -29,11 +29,11 @@ The existing Next.js application still runs with its existing commands; the vani
 - [x] Five category archives
 - [x] Search archive titles; filter rated/unrated entries
 - [x] Add media from metadata providers (provider credentials/configuration required)
-- [x] Detail dialog and half-star database values (click full-star targets; partial-star interaction can be added if strict parity is required)
+- [x] Detail dialog with clickable half-star ratings
 - [x] Edit and save reviews
 - [x] Delete media with confirmation
 - [x] Lazy-loaded poster images and responsive grids
-- [ ] Provider request proxy and credentials configuration
+- [ ] Secure provider proxy and production credentials configuration
 - [ ] Authentication / private per-user row-level security
 - [ ] Browser and production deployment testing
 - [ ] Verify existing records, ratings, category variants, and duplicate handling against a real project
