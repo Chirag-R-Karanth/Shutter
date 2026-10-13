@@ -19,8 +19,9 @@ export async function listMedia(category) {
 export async function addMedia(item) {
   const allowed = ["movies", "tv", "anime", "books", "games"];
   if (!allowed.includes(item.category)) throw new Error("Invalid media category.");
+  const categoryVariants = variants[item.category] || [item.category];
   const { data: existing, error: lookupError } = await supabase.from("media")
-    .select("id").eq("category", item.category).eq("external_id", item.external_id).limit(1);
+    .select("id").in("category", categoryVariants).eq("external_id", item.external_id).limit(1);
   if (lookupError) throw lookupError;
   if (existing?.length) throw new Error("This title is already in your archive.");
   const row = {
