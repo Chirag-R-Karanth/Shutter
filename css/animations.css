@@ -1,0 +1,10 @@
+@keyframes rise-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes poster-reveal { from { opacity: 0; transform: translateY(8px) scale(.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.hero > * { animation: rise-in .65s both; }
+.hero h1 { animation-delay: .07s; }
+.hero-copy { animation-delay: .13s; }
+.hero-links { animation-delay: .2s; }
+.poster-card { animation: poster-reveal .35s both; }
+@media (prefers-reduced-motion: reduce) {
+  .hero > *, .poster-card { animation: none; }
+}
