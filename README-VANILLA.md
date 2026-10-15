@@ -1,53 +1,49 @@
-# Shutter — Vanilla frontend migration
+# Shutter — Vanilla frontend
 
-This branch introduces a plain HTML/CSS/JavaScript frontend while leaving the existing Next.js app and Supabase schema intact. The migration is intentionally additive.
+The plain HTML/CSS/JavaScript frontend is now the default application on `main`. The original Next.js source remains in Git history, but is not present in the current `main` tree. Restoring this frontend did not modify the Supabase schema or existing database records.
 
 ## Requirements
 
-- A static web server (ES modules and browser imports do not work reliably from `file://`).
-- A Supabase project with the existing `media` table.
-- The browser-safe settings in `js/config.js` (the committed file contains placeholders).
+- Python 3 for the local static server; no Node build step or `npm install` is required.
+- The existing Supabase project with its `media` table, if you want to access the existing archive.
+- Valid browser-safe settings in `js/config.js`. The committed file deliberately contains placeholders.
 - An IGDB proxy endpoint to enable games search.
-- TMDB search needs an approved browser-exposed key or, preferably, a small server-side proxy. No provider secrets belong in browser code.
+- TMDB search needs an approved browser-exposed key or, preferably, a server-side proxy. Never put provider secrets in browser code.
 
 ## Run locally
 
-1. Edit `js/config.js` and insert your Supabase project URL and publishable/anon key. Use only a browser-safe key. TMDB is disabled until you configure an approved browser key or proxy; IGDB needs a proxy URL.
-2. Run a static server from the repository root, for example:
+1. Pull the repaired default branch:
 
    ```sh
-   python -m http.server 8080
+   git pull origin main
    ```
 
-3. Open `http://localhost:8080`.
+2. Configure `js/config.js` with the Supabase project URL and publishable/anon key. Do not put a service-role key or other secret in this file.
+3. Start the server from the repository root:
 
-The existing Next.js application still runs with its existing commands; the vanilla frontend is not yet the default entrypoint.
+   ```sh
+   npm run dev
+   ```
+
+4. Open http://localhost:8080.
+
+You can also run `python3 -m http.server 8080` directly. Do not open `index.html` through `file://`; ES modules require a server.
 
 ## Current parity
 
-- [x] Home page / category navigation
+- [x] Home page and category navigation
 - [x] Five category archives
-- [x] Search archive titles; filter rated/unrated entries
-- [x] Add media from metadata providers (provider credentials/configuration required)
-- [x] Detail dialog with clickable half-star ratings
-- [x] Edit and save reviews
-- [x] Delete media with confirmation
+- [x] Archive search and rated/unrated filters
+- [x] Detail dialog with half-star ratings
+- [x] Review editing and removal
 - [x] Lazy-loaded poster images and responsive grids
-- [ ] Secure provider proxy and production credentials configuration
+- [ ] Provider proxy and production credentials configuration
 - [ ] Authentication / private per-user row-level security
 - [ ] Browser and production deployment testing
-- [ ] Verify existing records, ratings, category variants, and duplicate handling against a real project
+- [ ] Verify existing records, category variants, duplicate handling, and CRUD behavior against a real project
 
-## Important security note
+## Data and security warning
 
-The existing `supabase/schema.sql` policies allow anyone with the project URL and anon key to read, insert, update, or delete every row. Because this frontend runs in the browser, that policy is not suitable for private data. Before deploying the frontend publicly, add authentication and owner-scoped RLS (or use a server-side API). Never put a Supabase service-role key or IGDB access token in frontend code.
+The current `supabase/schema.sql` policies allow anyone with the project URL and anon key to read, insert, update, or delete every row. Do not use that policy for a private archive or public deployment. Add authentication with owner-scoped RLS (or use a server-side API) first. Never put a Supabase service-role key or IGDB access token in frontend code.
 
-## Rollout plan
-
-1. Keep the current main branch live.
-2. Configure a staging Supabase project or a safe test user and run the vanilla version locally.
-3. Verify CRUD operations and provider result normalization.
-4. Tighten RLS and add a secure IGDB/TMDB proxy.
-5. Deploy the vanilla frontend to staging, inspect browser errors and network requests, then switch hosting only after parity checks pass.
-
-Do not delete the existing `app/`, `components/`, `actions/`, or Next.js configuration until the replacement has been tested against the actual archive.
+The static frontend still uses Supabase; this recovery does not migrate data to a local database. Do not change database architecture or run destructive migrations until the existing records have been backed up and verified.
