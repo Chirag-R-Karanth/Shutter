@@ -7,6 +7,6 @@ export const config = {
   // Empty by default. Prefer a small server-side proxy for TMDB.
   // Only set this if browser exposure of this specific TMDB key is acceptable.
   tmdbApiKey: "",
-  // URL to a server-side IGDB proxy you own.
-  igdbProxyUrl: ""
+  // Local proxy provided by dev_server.py. Use your deployed proxy URL when hosting.
+  igdbProxyUrl: "/api/igdb"
 };

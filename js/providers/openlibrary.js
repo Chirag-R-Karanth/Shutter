@@ -1,5 +1,8 @@
 export async function searchOpenLibrary(query, signal) {
-  const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=10`, { signal });
+  const response = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(query.trim())}&limit=10`, { signal });
+  if (response.status === 422) {
+    throw new Error("That search is too generic. Try a more specific book title or author.");
+  }
   if (!response.ok) throw new Error(`Open Library request failed (${response.status})`);
   const payload = await response.json();
   return (payload.docs || []).map(item => ({

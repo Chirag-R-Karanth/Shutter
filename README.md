@@ -5,15 +5,16 @@ A personal media archive for **movies, TV, anime, books, and games**, built with
 ## Run locally
 
 1. Edit `js/config.js` with your Supabase project URL and browser-safe publishable/anon key.
-2. Start a static file server:
+2. Copy `.env.example` to `.env` and add your IGDB client credentials to enable games search locally.
+3. Start the local server:
 
    ```bash
    npm run dev
    ```
 
-3. Visit [http://localhost:8080](http://localhost:8080).
+4. Visit [http://localhost:8080](http://localhost:8080).
 
-No Node build step or frontend framework is required. Python 3 is used only to serve files locally. For a deploy, publish the static project root (where `index.html` lives).
+`npm run dev` uses `dev_server.py`, which serves the static files and proxies IGDB searches through `/api/igdb` so the client secret stays server-side. No Node build step or frontend framework is required. For a deploy, publish the static project root (where `index.html` lives) and point `igdbProxyUrl` at your hosted proxy.
 
 ## Current features
 
@@ -29,7 +30,7 @@ No Node build step or frontend framework is required. Python 3 is used only to s
 - **AniList:** direct GraphQL requests; no key configured here.
 - **Open Library:** direct search requests.
 - **TMDB:** requires a browser-approved public key in `js/config.js`, or a protected server-side proxy. Browser-delivered keys are visible to visitors.
-- **IGDB:** requires a server-side proxy endpoint in `igdbProxyUrl`. Do not put Twitch OAuth secrets or IGDB access tokens in frontend files.
+- **IGDB:** local development uses the `/api/igdb` proxy from `dev_server.py` with credentials from `.env`. For static hosting, set `igdbProxyUrl` to your deployed proxy. Do not put Twitch OAuth secrets or IGDB access tokens in frontend files.
 
 The IGDB proxy should accept a `q` query parameter and return an array with `external_id`, `title`, `release_year`, `poster_url`, and `backdrop_url` properties.
 

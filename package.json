@@ -5,7 +5,7 @@
   "type": "module",
   "description": "A local-first static media archive frontend.",
   "scripts": {
-    "dev": "python3 -m http.server 8080",
-    "preview": "python3 -m http.server 4173"
+    "dev": "python3 dev_server.py 8080",
+    "preview": "python3 dev_server.py 4173"
   }
 }
