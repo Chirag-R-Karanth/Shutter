@@ -109,7 +109,12 @@ function renderGrid() {
     const art = item.poster_url
       ? `<img src="${escapeHTML(item.poster_url)}" alt="" loading="lazy" decoding="async">`
       : `<span class="poster-placeholder">${escapeHTML(item.title)}</span>`;
-    button.innerHTML = `${art}<span class="poster-overlay"><span class="poster-title">${escapeHTML(item.title)}</span><span class="poster-meta"><span>${escapeHTML(item.release_year || "Year unknown")}</span><span>${item.rating ? `<span class="rating-dot"></span>${Number(item.rating).toFixed(1)}` : ""}</span></span></span>`;
+    const rating = Number(item.rating || 0);
+    const dotClass = rating >= 4 ? "rating-dot green" : rating >= 2.5 ? "rating-dot yellow" : rating > 0 ? "rating-dot red" : "";
+    const cross = rating > 0
+      ? `<span class="poster-cross" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="0" y1="0" x2="100" y2="100"></line><line x1="100" y1="0" x2="0" y2="100"></line></svg></span>`
+      : "";
+    button.innerHTML = `${art}${cross}<span class="poster-overlay"><span class="poster-title">${escapeHTML(item.title)}</span><span class="poster-meta"><span>${escapeHTML(item.release_year || "Year unknown")}</span><span>${rating > 0 ? `<span class="${dotClass}"></span>${rating.toFixed(1)}` : ""}</span></span></span>`;
     button.addEventListener("click", () => {
       history.pushState(null, "", `#/${state.category}/${encodeURIComponent(item.id)}`);
       openDetails(item, false);

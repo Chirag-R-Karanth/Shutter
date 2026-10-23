@@ -5,7 +5,7 @@ import { config } from "../config.js";
 export async function searchIGDB(query, signal) {
   const endpoint = config.igdbProxyUrl;
   if (!endpoint) throw new Error("Games search needs an IGDB proxy. Configure igdbProxyUrl in js/config.js.");
-  const url = new URL(endpoint);
+  const url = new URL(endpoint, window.location.origin);
   url.searchParams.set("q", query);
   const response = await fetch(url, { signal, headers: { "Accept": "application/json" } });
   if (!response.ok) throw new Error(`Games search failed (${response.status})`);

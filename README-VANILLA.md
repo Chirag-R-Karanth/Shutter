@@ -7,7 +7,7 @@ The plain HTML/CSS/JavaScript frontend is now the default application on `main`.
 - Python 3 for the local static server; no Node build step or `npm install` is required.
 - The existing Supabase project with its `media` table, if you want to access the existing archive.
 - Valid browser-safe settings in `js/config.js`. The committed file deliberately contains placeholders.
-- An IGDB proxy endpoint to enable games search.
+- IGDB client credentials in `.env` for the local `/api/igdb` proxy. Hosted deployments need `igdbProxyUrl` pointed at a server-side proxy.
 - TMDB search needs an approved browser-exposed key or, preferably, a server-side proxy. Never put provider secrets in browser code.
 
 ## Run locally
@@ -19,15 +19,16 @@ The plain HTML/CSS/JavaScript frontend is now the default application on `main`.
    ```
 
 2. Configure `js/config.js` with the Supabase project URL and publishable/anon key. Do not put a service-role key or other secret in this file.
-3. Start the server from the repository root:
+3. Copy `.env.example` to `.env` and fill in your IGDB client credentials.
+4. Start the server from the repository root:
 
    ```sh
    npm run dev
    ```
 
-4. Open http://localhost:8080.
+5. Open http://localhost:8080.
 
-You can also run `python3 -m http.server 8080` directly. Do not open `index.html` through `file://`; ES modules require a server.
+`npm run dev` runs `dev_server.py`, which serves the frontend and exposes the IGDB proxy at `/api/igdb`. Running `python3 -m http.server 8080` still serves the frontend but disables games search. Do not open `index.html` through `file://`; ES modules require a server.
 
 ## Current parity
 
