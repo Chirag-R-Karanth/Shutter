@@ -1,0 +1,63 @@
+# Shutter: migrate from Next.js to plain HTML/CSS/JS
+
+## Context
+Shutter is my personal media archive (movies, TV shows, anime, games, books) with ratings and my own notes/feelings. No social features. It is currently Next.js + TypeScript + Supabase + shadcn/ui. I want a static site with plain HTML, CSS and vanilla JS. No React, no bundler, no build step. Supabase stays as the backend.
+
+## Rules (apply to every phase)
+- Work phase by phase. At the end of each phase, summarize what you did and STOP. Wait for me to say "next".
+- Do not delete or modify the existing Next.js app until I approve (Phase 7). Build the new site in a `/static` folder.
+- Do not change the Supabase schema unless I approve. If a change is needed, propose it first.
+- Never put secrets in client code or commit them. The Supabase anon key is fine in the client; the TMDB token (and any RAWG key) must only live in Supabase Edge Function secrets.
+- Use ES modules (`<script type="module">`), `supabase-js` from a CDN, and CSS variables. No frameworks.
+- Keep files small and readable. Comment only where logic isn't obvious.
+
+## Phase 0: Audit (read-only)
+Read `supabase/`, `services/`, `actions/`, `lib/`, `types/`, `components/`, and `app/`. Write `MIGRATION_NOTES.md` covering:
+1. Table schema (columns, types, relations) and existing RLS policies.
+2. Every external API call (TMDB, books, games, anime) and whether it uses a secret key.
+3. Every server action and what it does.
+4. List of pages/features in the current app.
+5. Anything that cannot run in the browser and needs an Edge Function.
+Stop and ask me about gaps.
+
+## Phase 1: Scaffold
+Create `/static` with:
+```
+index.html        (archive grid)
+entry.html        (single entry / edit)
+stats.html
+login.html
+css/  base.css, components.css
+js/   supabase.js, auth.js, api.js, ui.js, state.js, pages/*.js
+```
+Shared header/nav, dark theme, mobile-first responsive layout. Placeholder content only.
+
+## Phase 2: Supabase client + auth
+- `supabase.js` creates the client from a URL and anon key kept in a `config.js` (committed, public values only).
+- Email/password login on `login.html`. Redirect unauthenticated users to login.
+- Verify RLS: all tables restricted so `auth.uid() = user_id`. Show me the SQL for anything missing.
+
+## Phase 3: Edge Function proxy for metadata
+- Create `supabase/functions/tmdb/index.ts` (search + details for movie/tv), reading `TMDB_TOKEN` from secrets, handling CORS `OPTIONS`, and requiring a valid user JWT.
+- If games (RAWG/IGDB) use a key, add a function for it too. Books (Open Library) and anime (Jikan) need no key and can be called directly from the browser.
+- Port the logic from `services/` so response shapes are normalized to one `{ title, year, type, cover, overview, externalId }` format.
+- Give me the exact `supabase secrets set` and `supabase functions deploy` commands.
+
+## Phase 4: Core features
+- Add, edit, delete entries for all five types.
+- Fields: title, type, rating, status (planned/in progress/done), my feelings/notes, date, cover URL.
+- Search box that queries the right metadata source per type and pre-fills the form. Manual entry always available.
+- Archive grid with filter by type/rating/status, sort, and text search.
+
+## Phase 5: Stats, export/import
+- `stats.html`: counts per type, average rating, rating distribution, recently added. Use plain SVG/CSS bars, no chart library.
+- Export all entries to JSON; import from JSON with a duplicate check.
+
+## Phase 6: Polish
+- Empty states, loading states, error messages, keyboard-friendly forms, accessible labels, focus styles.
+- Check at 375px, 768px, and 1280px widths.
+
+## Phase 7: Deploy and cleanup
+- Prepare for GitHub Pages (or Netlify/Cloudflare Pages). Provide the steps.
+- Final checklist: no secrets in repo, RLS on, Edge Functions deployed, all features at parity with the Next.js app.
+- Only after I confirm parity, propose removing the Next.js files (list them first, delete nothing yet).
